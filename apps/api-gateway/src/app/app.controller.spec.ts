@@ -14,9 +14,9 @@ describe('AppController', () => {
   });
 
   describe('getData', () => {
-    it('should return "Hello API"', () => {
+    it('should return "Welcome to api-gateway!"', () => {
       const appController = app.get<AppController>(AppController);
-      expect(appController.getData()).toEqual({ message: 'Hello API' });
+      expect(appController.getData()).toEqual({ message: 'Welcome to api-gateway!' });
     });
   });
 });
