@@ -1,0 +1,24 @@
+{
+  "name": "auth-microservice",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/auth-microservice/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "auth-microservice:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "auth-microservice:build:development"
+        },
+        "production": {
+          "buildTarget": "auth-microservice:build:production"
+        }
+      }
+    }
+  }
+}
