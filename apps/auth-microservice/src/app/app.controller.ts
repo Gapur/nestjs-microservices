@@ -10,12 +10,13 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @MessagePattern('create_user')
-  handleCreateUser(@Payload(ValidationPipe) newUser: CreateUserDto) {
+  handleCreateUser(newUser: CreateUserDto) {
     return this.appService.createUser(newUser);
   }
 
   @MessagePattern('get_user')
-  handleGetUser(@Payload(ValidationPipe) user: CreateUserDto) {
+  handleGetUser(user: CreateUserDto) {
+    console.log('microservice get user', user);
     return this.appService.getUser(user.username);
   }
 }

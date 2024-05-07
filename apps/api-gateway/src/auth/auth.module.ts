@@ -10,6 +10,10 @@ import { AuthService } from './auth.service';
       {
         name: 'AUTH_MICROSERVICE',
         transport: Transport.TCP,
+        options: {
+          host: 'localhost',
+          port: 3001,
+        },
       },
     ]),
   ],
