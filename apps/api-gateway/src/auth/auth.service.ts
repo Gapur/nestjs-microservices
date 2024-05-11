@@ -9,11 +9,11 @@ export class AuthService {
     @Inject('AUTH_MICROSERVICE') private readonly authClient: ClientProxy
   ) {}
 
-  createUser(createUserDto: CreateUserDto) {
-    return this.authClient.send('create_user', JSON.stringify(createUserDto));
-  }
-
   getUser(createUserDto: CreateUserDto) {
-    return this.authClient.send('get_user', JSON.stringify(createUserDto));
+    return this.authClient.send<CreateUserDto>('get_user', createUserDto);
+  }
+  
+  createUser(createUserDto: CreateUserDto) {
+    return this.authClient.send<CreateUserDto>('create_user', createUserDto);
   }
 }

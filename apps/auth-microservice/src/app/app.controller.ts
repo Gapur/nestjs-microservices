@@ -9,14 +9,13 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @MessagePattern('get_user')
+  handleGetUser(user: CreateUserDto) {
+    return this.appService.getUser(user.username);
+  }
+
   @MessagePattern('create_user')
   handleCreateUser(newUser: CreateUserDto) {
     return this.appService.createUser(newUser);
-  }
-
-  @MessagePattern('get_user')
-  handleGetUser(user: CreateUserDto) {
-    console.log('auth service', user);
-    return this.appService.getUser(user.username);
   }
 }
