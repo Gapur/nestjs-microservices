@@ -10,11 +10,10 @@ export class AuthService {
   ) {}
 
   createUser(createUserDto: CreateUserDto) {
-    this.authClient.send('create_user', JSON.stringify(createUserDto));
+    return this.authClient.send('create_user', JSON.stringify(createUserDto));
   }
 
   getUser(createUserDto: CreateUserDto) {
-    console.log('get user');
     return this.authClient.send('get_user', JSON.stringify(createUserDto));
   }
 }

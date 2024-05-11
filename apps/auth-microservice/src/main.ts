@@ -3,7 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 
@@ -20,8 +20,6 @@ async function bootstrap() {
       },
     }
   );
-
-  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen();
 

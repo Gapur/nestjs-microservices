@@ -1,5 +1,5 @@
-import { Controller, ValidationPipe } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 
 import { CreateUserDto } from '@nestjs-microservices/shared';
 
@@ -16,7 +16,7 @@ export class AppController {
 
   @MessagePattern('get_user')
   handleGetUser(user: CreateUserDto) {
-    console.log('microservice get user', user);
+    console.log('auth service', user);
     return this.appService.getUser(user.username);
   }
 }
