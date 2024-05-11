@@ -7,8 +7,4 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   password: string;
-
-  get username() {
-    return this.username;
-  }
 }
