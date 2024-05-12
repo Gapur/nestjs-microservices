@@ -1,7 +1,7 @@
 import { Body, Controller, Post, BadRequestException } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 
-import { CreateUserDto } from '@nestjs-microservices/shared';
+import { CreateUserDto, User } from '@nestjs-microservices/shared';
 
 import { AuthService } from './auth.service';
 
@@ -11,7 +11,7 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() createUserDto: CreateUserDto) {
-    const user = await lastValueFrom(this.authService.getUser(createUserDto), {
+    const user: User = await lastValueFrom(this.authService.getUser(createUserDto), {
       defaultValue: undefined,
     });
     if (!user) {
@@ -30,7 +30,7 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
-    const user = await lastValueFrom(this.authService.getUser(createUserDto), {
+    const user: User = await lastValueFrom(this.authService.getUser(createUserDto), {
       defaultValue: undefined,
     });
     if (user) {
