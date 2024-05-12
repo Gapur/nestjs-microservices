@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { map } from 'rxjs/operators';
 
-import { CreateUserDto } from '@nestjs-microservices/shared';
+import { CreateUserDto, User } from '@nestjs-microservices/shared';
 
 @Injectable()
 export class AuthService {
@@ -10,9 +11,11 @@ export class AuthService {
   ) {}
 
   getUser(createUserDto: CreateUserDto) {
-    return this.authClient.send<CreateUserDto>('get_user', createUserDto);
+    return this.authClient
+      .send<CreateUserDto>('get_user', createUserDto)
+      .pipe(map((user: User | undefined) => user));
   }
-  
+
   createUser(createUserDto: CreateUserDto) {
     return this.authClient.send<CreateUserDto>('create_user', createUserDto);
   }

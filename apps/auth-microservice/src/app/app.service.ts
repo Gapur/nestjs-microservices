@@ -12,7 +12,7 @@ export class AppService {
     return this.userRepository.save(newUser);
   }
 
-  getUser(username: string): User {
+  getUser(username: string): User | undefined {
     return this.userRepository.findOne(username);
   }
 }

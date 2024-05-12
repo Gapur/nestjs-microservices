@@ -6,7 +6,7 @@ import { CreateUserDto, User } from '@nestjs-microservices/shared';
 export class UserRepository {
   private users: User[] = [];
 
-  save(user: CreateUserDto) {
+  save(user: CreateUserDto): User {
     const newUser = new User();
     newUser.id = this.users.length + 1;
     newUser.username = user.username;
@@ -15,7 +15,7 @@ export class UserRepository {
     return newUser;
   }
 
-  findOne(username: string) {
+  findOne(username: string): User | undefined {
     return this.users.find((user) => user.username === username);
   }
 }

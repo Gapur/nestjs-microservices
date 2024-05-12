@@ -1,4 +1,5 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, BadRequestException } from '@nestjs/common';
+import { lastValueFrom } from 'rxjs';
 
 import { CreateUserDto } from '@nestjs-microservices/shared';
 
@@ -9,12 +10,35 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  login(@Body() createUserDto: CreateUserDto) {
-    return this.authService.getUser(createUserDto);
+  async login(@Body() createUserDto: CreateUserDto) {
+    const user = await lastValueFrom(this.authService.getUser(createUserDto), {
+      defaultValue: undefined,
+    });
+    if (!user) {
+      throw new BadRequestException('Invalid credentials');
+    }
+
+    const isMatch = user.password === createUserDto.password;
+    if (!isMatch) {
+      throw new BadRequestException('Incorrect password');
+    }
+
+    console.log(`User ${user.username} successfully logged in.`);
+
+    return user;
   }
 
   @Post('signup')
-  signup(@Body() createUserDto: CreateUserDto) {
+  async signup(@Body() createUserDto: CreateUserDto) {
+    const user = await lastValueFrom(this.authService.getUser(createUserDto), {
+      defaultValue: undefined,
+    });
+    if (user) {
+      throw new BadRequestException(
+        `Username ${createUserDto.username} already exists!`
+      );
+    }
+
     return this.authService.createUser(createUserDto);
   }
 }
