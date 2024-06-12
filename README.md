@@ -8,7 +8,7 @@
 
 As our projects get bigger and bigger, we need more and more advanced architecture. Therefore, as a software engineer, I would like to introduce you to the modern popular microservice architecture that follows the concept of SOA (Service Oriented Architecture).
 
-In this article, I want to talk about the difference between monolithic and microservice architectures and show how to build them using NestJS, TCP and Typescript. Let’s first dive into what microservices are.
+In this article, I want to talk about the difference between monolithic and microservice architectures and show how to build them using `NestJS`, `TCP` and `Typescript`. Let’s first dive into what microservices are.
 
 ## Getting Started
 
@@ -40,9 +40,9 @@ Before we start, I would like to highlight two main aspects of our project:
 auth-microservice — authentication service responsible for managing user permissions
 API Gateway — a service between the client and the microservices that emits events from the HTTP API endpoint to the microservice
 
-In short, when a user logs in with credentials through the /api/login endpoint, they are connected to the API Gateway. The API Gateway then sends and receives a message from the authentication microservice using a request-response style message pattern. This is roughly how our app will work.
+In short, when a user logs in with credentials through the `/api/login` endpoint, they are connected to the API Gateway. The API Gateway then sends and receives a message from the authentication microservice using a request-response style message pattern. This is roughly how our app will work.
 
-Since we’ll be building multiple services, it’s best to have a monorepo project, which is a single version-controlled code repository that includes various apps and libraries. Hence, we are going to use the Nx tool for mono-repository management, which allows you to build and scale web apps and services in a mono-repository.
+Since we’ll be building multiple services, it’s best to have a monorepo project, which is a single version-controlled code repository that includes various apps and libraries. Hence, we are going to use the [Nx](https://nx.dev) tool for mono-repository management, which allows you to build and scale web apps and services in a mono-repository.
 
 First, let’s just create a monorepo project with the following command:
 ```sh
@@ -59,14 +59,14 @@ npm i @nestjs/microservices class-validator class-transformer
 
 ## Adding an Auth Module
 
-Since our project is created, nx has already created an API Gateway service application for us. Now we will create an auth module in our API Gateway app that is responsible for handling authentication related requests.
+Since our project is created, nx has already created an `API Gateway` service application for us. Now we will create an auth module in our API Gateway app that is responsible for handling authentication related requests.
 
 When a user makes a request to our app, then the API Gateway receives and sends the request to the microservices. So they will use the same data type and it makes sense to create a shared library in our monorepo and avoid duplicating the same code all over the place with the following command:
 ```sh
 nx g @nx/nest:lib shared
 ```
 
-Now, let’s create a dto folder and add create-user.dto.ts file:
+Now, let’s create a dto folder and add `create-user.dto.ts` file:
 ```ts
 // shared/src/lib/dto/create-user.dto.ts
 
@@ -82,7 +82,7 @@ export class CreateUserDto {
 }
 ```
 
-Also we can add a path entry in the tsconfig.base.json and import them with absolute paths:
+Also we can add a path entry in the `tsconfig.base.json` and import them with absolute paths:
 
 ```json
 {
@@ -97,7 +97,7 @@ Also we can add a path entry in the tsconfig.base.json and import them with abso
 }
 ```
 
-NestJS transports messages between different microservice instances using the default TCP transport layer. NestJS provides a ClientsModule which exposes the static register() method that takes as an argument an array of objects describing the microservice transporters. Let’s add auth.service.ts and register AUTH_MICROSERVICE using the following lines of code:
+NestJS transports messages between different microservice instances using the default TCP transport layer. NestJS provides a `ClientsModule` which exposes the static `register()` method that takes as an argument an array of objects describing the microservice transporters. Let’s add `auth.service.ts` and register `AUTH_MICROSERVICE` using the following lines of code:
 
 ```ts
 // apps/api-gateway/src/auth/auth.module.ts
@@ -129,7 +129,7 @@ export class AuthModule {}
 
 Above, each transporter has a name property, an optional transport property (default is Transport.TCP), and an optional transporter-specific options property.
 
-Once the module has been imported, we can inject a ClientProxy instance configured as specified using the AUTH_MICROSERVICE transporter parameters using the @Inject() decorator in the auth.service.ts as shown below:
+Once the module has been imported, we can inject a `ClientProxy` instance configured as specified using the AUTH_MICROSERVICE transporter parameters using the `@Inject()` decorator in the `auth.service.ts` as shown below:
 
 ```ts
 // apps/api-gateway/src/auth/auth.service.ts
@@ -155,13 +155,13 @@ export class AuthService {
 }
 ```
 
-As shown above, we can send a message to the authentication microservice using the get_user or create_user patterns. We will use them when the user logs in or registers.
+As shown above, we can send a message to the authentication microservice using the `get_user` or `create_user` patterns. We will use them when the user logs in or registers.
 
 The send method is designed to call a microservice and returns an Observable as a response. This takes two arguments:
 - pattern — one defined in a @MessagePattern() decorator
 - payload — the message we want to transmit to the microservice
 
-Last, we’ll create an AuthController class with two API endpoints for login and signup:
+Last, we’ll create an `AuthController` class with two API endpoints for login and signup:
 
 ```ts
 // apps/api-gateway/src/auth/auth.controller.ts
@@ -212,7 +212,7 @@ export class AuthController {
 }
 ```
 
-As mentioned earlier, the getUser and createUser auth client methods return an Obserable, which means you need to explicitly subscribe to it before the message is sent. But we can convert an Observable to a Promise using the lastValueFrom method imported from rxjs.
+As mentioned earlier, the `getUser` and `createUser` auth client methods return an `Obserable`, which means you need to explicitly subscribe to it before the message is sent. But we can convert an Observable to a Promise using the `lastValueFrom` method imported from `rxjs`.
 
 ## Creating an Auth Microservice
 
@@ -253,9 +253,9 @@ async function bootstrap() {
 bootstrap();
 ```
 
-The createMicroservice() method of the NestFactory class creates an instance of a microservice.
+The `createMicroservice()` method of the NestFactory class creates an instance of a microservice.
 
-Then we’ll create a User entity in a shared library that we’ll use in the UsersRepository class to do things like storing user data and retrieving the user.
+Then we’ll create a User entity in a shared library that we’ll use in the `UsersRepository` class to do things like storing user data and retrieving the user.
 
 ```ts
 // shared/src/lib/entities/user.entity.ts
@@ -267,7 +267,7 @@ export class User {
 }
 ```
 
-We will not use any database and for brevity we will store the data in memory in this demo. Let’s create a simple user.repository.ts file with UserRepository class:
+We will not use any database and for brevity we will store the data in memory in this demo. Let’s create a simple `user.repository.ts` file with `UserRepository` class:
 
 ```ts
 // apps/auth-microservice/src/app/user.repository.ts
@@ -295,7 +295,7 @@ export class UserRepository {
 }
 ```
 
-Now we are going to add createUser() and getUser() to create and find a user respectively using the UserRepository methods in the app.service.ts:
+Now we are going to add `createUser()` and `getUser()` to create and find a user respectively using the `UserRepository` methods in the `app.service.ts`:
 
 ```ts
 // apps/auth-microservice/src/app/app.service.ts
@@ -320,7 +320,7 @@ export class AppService {
 }
 ```
 
-Finally, we’ll create message handler methods based on the request-response paradigm using the @MessagePattern() decorator, which is imported from the @nestjs/microservices package.
+Finally, we’ll create message handler methods based on the request-response paradigm using the `@MessagePattern()` decorator, which is imported from the `@nestjs/microservices` package.
 
 ```ts
 // apps/auth-microservice/src/app/app.controller.ts
@@ -341,7 +341,7 @@ export class AppController {
 }
 ```
 
-In the above code, the handleGetUser() message handler listens for messages matching the get_user message pattern. The message handler takes a single argument — the user as the CreateUserDto type passed from the client.
+In the above code, the `handleGetUser()` message handler listens for messages matching the get_user message pattern. The message handler takes a single argument — the user as the `CreateUserDto` type passed from the client.
 
 ## Running and Testing the Services
 
