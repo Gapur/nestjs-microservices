@@ -213,3 +213,159 @@ export class AuthController {
 ```
 
 As mentioned earlier, the getUser and createUser auth client methods return an Obserable, which means you need to explicitly subscribe to it before the message is sent. But we can convert an Observable to a Promise using the lastValueFrom method imported from rxjs.
+
+## Creating an Auth Microservice
+
+Now we will create our first authentication microservice by running the following command:
+
+```sh
+nx g @nx/nest:app auth-microservice
+```
+
+Let’s update the bootstrap() function boilerplate code in the main.ts file of the auth-microservice app with the NestFactory.createMicroservice() method:
+
+```ts
+// apps/auth-microservice/src/main.ts
+
+import { Logger } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { Transport, MicroserviceOptions } from '@nestjs/microservices';
+
+import { AppModule } from './app/app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    {
+      transport: Transport.TCP,
+      options: {
+        host: 'localhost',
+        port: 3001,
+      },
+    }
+  );
+
+  await app.listen();
+
+  Logger.log('🚀 Auth microservice is listening');
+}
+
+bootstrap();
+```
+
+The createMicroservice() method of the NestFactory class creates an instance of a microservice.
+
+Then we’ll create a User entity in a shared library that we’ll use in the UsersRepository class to do things like storing user data and retrieving the user.
+
+```ts
+// shared/src/lib/entities/user.entity.ts
+
+export class User {
+  id?: number;
+  username: string;
+  password: string;
+}
+```
+
+We will not use any database and for brevity we will store the data in memory in this demo. Let’s create a simple user.repository.ts file with UserRepository class:
+
+```ts
+// apps/auth-microservice/src/app/user.repository.ts
+
+import { Injectable } from '@nestjs/common';
+
+import { CreateUserDto, User } from '@nestjs-microservices/shared';
+
+@Injectable()
+export class UserRepository {
+  private users: User[] = [];
+
+  save(user: CreateUserDto): User {
+    const newUser = new User();
+    newUser.id = this.users.length + 1;
+    newUser.username = user.username;
+    newUser.password = user.password;
+    this.users.push(newUser);
+    return newUser;
+  }
+
+  findOne(username: string): User | undefined {
+    return this.users.find((user) => user.username === username);
+  }
+}
+```
+
+Now we are going to add createUser() and getUser() to create and find a user respectively using the UserRepository methods in the app.service.ts:
+
+```ts
+// apps/auth-microservice/src/app/app.service.ts
+
+import { Injectable } from '@nestjs/common';
+
+import { CreateUserDto, User } from '@nestjs-microservices/shared';
+
+import { UserRepository } from './user.repository';
+
+@Injectable()
+export class AppService {
+  constructor(private readonly userRepository: UserRepository) {}
+
+  createUser(newUser: CreateUserDto): User {
+    return this.userRepository.save(newUser);
+  }
+
+  getUser(username: string): User | undefined {
+    return this.userRepository.findOne(username);
+  }
+}
+```
+
+Finally, we’ll create message handler methods based on the request-response paradigm using the @MessagePattern() decorator, which is imported from the @nestjs/microservices package.
+
+```ts
+// apps/auth-microservice/src/app/app.controller.ts
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @MessagePattern('get_user') // listens for the get_user message pattern
+  handleGetUser(user: CreateUserDto) {
+    return this.appService.getUser(user.username);
+  }
+
+  @MessagePattern('create_user') // listens for the create_user message pattern
+  handleCreateUser(newUser: CreateUserDto) {
+    return this.appService.createUser(newUser);
+  }
+}
+```
+
+In the above code, the handleGetUser() message handler listens for messages matching the get_user message pattern. The message handler takes a single argument — the user as the CreateUserDto type passed from the client.
+
+## Running and Testing the Services
+
+To test all services, we need to run the following commands individually on separate terminals:
+
+```sh
+nx serve api-gateway
+nx serve auth-microservice
+```
+
+To test the app, we can use Postman or any other API client.
+
+# Conclusion
+
+Thanks for reading — I hope you found this piece useful. Happy coding!
+
+## Article on Medium
+
+[Building Microservices with NestJS, TCP and Typescript](https://medium.com/itnext/building-microservices-with-nestjs-tcp-and-typescript-dda33aad8b89)
+
+## How to contribute?
+
+1. Fork this repo
+2. Clone your fork
+3. Code 🤓
+4. Test your changes
+5. Submit a PR!
