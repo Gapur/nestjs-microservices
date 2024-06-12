@@ -37,8 +37,8 @@ For a better understanding, we will develop a microservices project together in 
 ## Setting Up the Project
 
 Before we start, I would like to highlight two main aspects of our project:
-auth-microservice — authentication service responsible for managing user permissions
-API Gateway — a service between the client and the microservices that emits events from the HTTP API endpoint to the microservice
+- auth-microservice — authentication service responsible for managing user permissions
+- API Gateway — a service between the client and the microservices that emits events from the HTTP API endpoint to the microservice
 
 In short, when a user logs in with credentials through the `/api/login` endpoint, they are connected to the API Gateway. The API Gateway then sends and receives a message from the authentication microservice using a request-response style message pattern. This is roughly how our app will work.
 
@@ -49,7 +49,7 @@ First, let’s just create a monorepo project with the following command:
 npx create-nx-workspace nestjs-microservices --preset=nest
 ```
 
-Specify the app name as api-gateway.
+Specify the app name as `api-gateway`.
 
 Now let’s install the project dependencies by running the following commands:
 ```sh
